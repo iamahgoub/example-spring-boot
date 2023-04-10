@@ -7,11 +7,10 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - echo Building the Docker image...          
+      - docker --version
       - docker build -t example-spring-boot-crac .
-      - docker run -it --privileged --rm --name example-spring-boot-crac example-spring-boot-crac
-      - cd /opt/app
-      - nohup java -XX:CRaCCheckpointTo=/opt/crac-files -jar spring-boot-initial-0.0.1-SNAPSHOT.jar &
-      - echo nohup.out
+      - docker run --detach --privileged --rm --name example-spring-boot-crac example-spring-boot-crac /opt/scripts/snapshot.sh
+      - docker exec -it -u root example-spring-boot-crac /opt/scripts/snapshot-wait.sh
+      - docker commit example-spring-boot-crac example-spring-boot-crac:checkpoint
   post_build:
     commands:

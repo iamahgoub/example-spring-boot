@@ -12,3 +12,5 @@ RUN apt-get update -y \
     && rm $JAVA_HOME/openjdk.tar.gz  && mkdir -p /opt/crac-files
 
 COPY target/spring-boot-initial-0.0.1-SNAPSHOT.jar /opt/app/spring-boot-initial-0.0.1-SNAPSHOT.jar
+COPY --chmod=777 snapshot.sh /opt/scripts/snapshot.sh
+COPY --chmod=777 snapshot-wait.sh /opt/scripts/snapshot-wait.sh
