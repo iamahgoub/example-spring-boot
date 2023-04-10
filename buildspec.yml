@@ -9,5 +9,9 @@ phases:
       - echo Build started on `date`
       - echo Building the Docker image...          
       - docker build -t example-spring-boot-crac .
+      - docker run -it --privileged --rm --name example-spring-boot-crac example-spring-boot-crac
+      - cd /opt/app
+      - nohup java -XX:CRaCCheckpointTo=/opt/crac-files -jar spring-boot-initial-0.0.1-SNAPSHOT.jar &
+      - echo nohup.out
   post_build:
     commands:
