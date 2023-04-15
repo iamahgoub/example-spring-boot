@@ -8,16 +8,17 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - DOCKER_BUILDKIT=1 docker build -t $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION .
-      - docker run --detach --privileged --rm --name $IMAGE_REPO_NAME $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION /opt/scripts/checkpoint.sh
+      - export COMMITID=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
+      - DOCKER_BUILDKIT=1 docker build -t $IMAGE_REPO_NAME:$COMMITID .
+      - docker run --detach --privileged --rm --name $IMAGE_REPO_NAME $IMAGE_REPO_NAME:$COMMITID /opt/scripts/checkpoint.sh
       - docker exec -u root $IMAGE_REPO_NAME /opt/scripts/checkpoint-wait.sh
-      - docker commit $IMAGE_REPO_NAME $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION-checkpoint
-      - docker tag $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - docker tag $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION-checkpoint $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION-checkpoint   
+      - docker commit $IMAGE_REPO_NAME $IMAGE_REPO_NAME:$COMMITID-checkpoint
+      - docker tag $IMAGE_REPO_NAME:$COMMITID $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$COMMITID
+      - docker tag $IMAGE_REPO_NAME:$COMMITID-checkpoint $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$COMMITID-checkpoint   
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION-checkpoint
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$COMMITID
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$COMMITID-checkpoint
