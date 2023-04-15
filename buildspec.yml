@@ -9,14 +9,16 @@ phases:
     commands:
       - echo Build started on `date`
       - docker --version
-      - DOCKER_BUILDKIT=1 docker build -t $IMAGE_REPO_NAME .
-      - docker run --detach --privileged --rm --name $IMAGE_REPO_NAME $IMAGE_REPO_NAME /opt/scripts/checkpoint.sh
+      - DOCKER_BUILDKIT=1 docker build -t $IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION .
+      - docker run --detach --privileged --rm --name $IMAGE_REPO_NAME $IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION /opt/scripts/checkpoint.sh
       - docker exec -u root $IMAGE_REPO_NAME /opt/scripts/checkpoint-wait.sh
-      - docker commit $IMAGE_REPO_NAME $IMAGE_REPO_NAME:checkpoint
-      - docker tag $IMAGE_REPO_NAME:checkpoint $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:checkpoint   
+      - docker commit $IMAGE_REPO_NAME $IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION-checkpoint
+      - docker tag $IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION
+      - docker tag $IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION-checkpoint $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION-checkpoint   
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:checkpoint
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_SOURCE_VERSION-checkpoint
