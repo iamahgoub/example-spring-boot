@@ -4,13 +4,19 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
       - echo Build started on `date`
       - docker --version
-      - DOCKER_BUILDKIT=1 docker build -t example-spring-boot-crac .
-      - docker run --detach --privileged --rm --name example-spring-boot-crac example-spring-boot-crac /opt/scripts/checkpoint.sh
-      - docker exec -u root example-spring-boot-crac /opt/scripts/checkpoint-wait.sh
-      - docker commit example-spring-boot-crac example-spring-boot-crac:checkpoint
+      - DOCKER_BUILDKIT=1 docker build -t $IMAGE_REPO_NAME .
+      - docker run --detach --privileged --rm --name $IMAGE_REPO_NAME $IMAGE_REPO_NAME /opt/scripts/checkpoint.sh
+      - docker exec -u root $IMAGE_REPO_NAME /opt/scripts/checkpoint-wait.sh
+      - docker commit $IMAGE_REPO_NAME $IMAGE_REPO_NAME:checkpoint
+      - docker tag $IMAGE_REPO_NAME:checkpoint $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:checkpoint   
+
   post_build:
     commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:checkpoint
