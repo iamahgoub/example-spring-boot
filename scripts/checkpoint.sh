@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# pre-requisites
+apt-get --assume-yes install siege -y
 # start the application
 echo Starting the application...
 cd /opt/app
@@ -15,7 +17,7 @@ echo Warming up the application...
 siege -c 1 -r 10 -b http://localhost:8080
 sleep 10
 
-# take a snapshot
+# request a checkpoint
 echo Taking a snapshot of the application using CRaC...
 mkdir /opt/logs/
 jcmd spring-boot-initial-0.0.1-SNAPSHOT.jar JDK.checkpoint >> /opt/logs/snapshot.log
