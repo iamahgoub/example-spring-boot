@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: example-spring-boot
-        image: 536253303170.dkr.ecr.eu-west-2.amazonaws.com/example-spring-boot:f630a64-checkpoint
+        image: 536253303170.dkr.ecr.eu-west-2.amazonaws.com/example-spring-boot:154d29a-checkpoint
         ports:
         - containerPort: 8080
           name: http
