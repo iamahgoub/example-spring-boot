@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-spring-boot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: example-spring-boot
+  template:
+    metadata:
+      labels:
+        app: example-spring-boot
+    spec:
+      containers:
+      - name: example-spring-boot
+        image: 536253303170.dkr.ecr.eu-west-2.amazonaws.com/example-spring-boot:f630a64-checkpoint
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        securityContext:
+          privileged: true
+          runAsUser: 0
+          allowPrivilegeEscalation: true
+        command: ["/opt/scripts/run-service.sh"]
+        args: [""]
+
