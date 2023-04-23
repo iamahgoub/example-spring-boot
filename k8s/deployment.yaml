@@ -14,15 +14,18 @@ spec:
     spec:
       containers:
       - name: example-spring-boot
-        image: 536253303170.dkr.ecr.eu-west-2.amazonaws.com/example-spring-boot:154d29a-checkpoint
+        image: 536253303170.dkr.ecr.eu-west-2.amazonaws.com/example-spring-boot:5afeb19-checkpoint
         ports:
         - containerPort: 8080
           name: http
           protocol: TCP
         securityContext:
+          capabilities:
+            add:
+              - all
           privileged: true
           runAsUser: 0
           allowPrivilegeEscalation: true
-        command: ["/opt/scripts/run-service.sh"]
-        args: [""]
+        command: ["/bin/bash"]
+        args: ["/opt/scripts/run-service.sh"]
 
